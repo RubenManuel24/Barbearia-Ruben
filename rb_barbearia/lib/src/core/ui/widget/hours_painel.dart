@@ -1,21 +1,39 @@
 import 'package:barbearia_rb/src/core/ui/constant.dart';
 import 'package:flutter/material.dart';
 
-class HoursPainel extends StatelessWidget {
-  const HoursPainel(
-      {super.key,
-      required this.startTime,
-      required this.endTime,
-      required this.onHoursPressed,
-      this.enableHours});
-
-  final List<int>? enableHours;
+class HoursPainel extends StatefulWidget {
+  final List<dynamic>? enableHours;
   final int startTime;
   final int endTime;
   final ValueChanged<int> onHoursPressed;
+  final bool singleSelection;
+
+  const HoursPainel({
+    super.key,
+    required this.startTime,
+    required this.endTime,
+    required this.onHoursPressed,
+    this.enableHours,
+  }) : singleSelection = false;
+
+  const HoursPainel.singleSelection({
+    super.key,
+    required this.startTime,
+    required this.endTime,
+    required this.onHoursPressed,
+    this.enableHours,
+  }) : singleSelection = true;
+
+  @override
+  State<HoursPainel> createState() => _HoursPainelState();
+}
+
+class _HoursPainelState extends State<HoursPainel> {
+  int? lastSelected;
 
   @override
   Widget build(BuildContext context) {
+    final HoursPainel(:singleSelection) = widget;
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -30,11 +48,25 @@ class HoursPainel extends StatelessWidget {
             spacing: 8.0,
             runSpacing: 8.0,
             children: [
-              for (int i = startTime; i <= endTime; i++)
+              for (int i = widget.startTime; i <= widget.endTime; i++)
                 ButtonHours(
-                  enableHours: enableHours,
+                  enableHours: widget.enableHours,
                   hours: '${i.toString().padLeft(2, '0')}:00',
-                  onHoursPressed: onHoursPressed,
+                  singleSelected: singleSelection,
+                  timeSelected: lastSelected,
+                  onHoursPressed: (timeSelected) {
+                    setState(() {
+                      if (singleSelection) {
+                        if (lastSelected == timeSelected) {
+                          lastSelected = null;
+                        } else {
+                          lastSelected = timeSelected;
+                        }
+                      }
+                    });
+
+                    widget.onHoursPressed(timeSelected);
+                  },
                   value: i,
                 ),
             ],
@@ -51,12 +83,16 @@ class ButtonHours extends StatefulWidget {
       required this.hours,
       required this.onHoursPressed,
       required this.value,
-      this.enableHours});
+      this.enableHours,
+      required this.singleSelected,
+      required this.timeSelected});
 
-  final List<int>? enableHours;
+  final List<dynamic>? enableHours;
   final String hours;
   final ValueChanged<int> onHoursPressed;
   final int value;
+  final bool singleSelected;
+  final int? timeSelected;
 
   @override
   State<ButtonHours> createState() => _ButtonHoursState();
@@ -67,12 +103,29 @@ class _ButtonHoursState extends State<ButtonHours> {
 
   @override
   Widget build(BuildContext context) {
+    final ButtonHours(
+      :hours,
+      :onHoursPressed,
+      :value,
+      :enableHours,
+      :singleSelected,
+      :timeSelected
+    ) = widget;
+
+    if (singleSelected) {
+      if (timeSelected != null) {
+        if (timeSelected == value) {
+          buttonSelected = true;
+        } else {
+          buttonSelected = false;
+        }
+      }
+    }
+
     final textColor = buttonSelected ? Colors.white : ColorConstant.grey;
     var buttonColor = buttonSelected ? ColorConstant.brow : Colors.white;
     final borderButtonColor =
         buttonSelected ? ColorConstant.brow : ColorConstant.grey;
-
-    final ButtonHours(:hours, :onHoursPressed, :value, :enableHours) = widget;
 
     final disableHours = enableHours != null && !enableHours.contains(value);
 

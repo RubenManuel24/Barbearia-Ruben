@@ -53,7 +53,8 @@ class EmployeeTile extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12)),
                           onPressed: () {
-                            Navigator.of(context).pushNamed('/schedule');
+                            Navigator.of(context)
+                                .pushNamed('/schedule', arguments: employee);
                           },
                           child: const Text(
                             'AGENDAR',
@@ -63,7 +64,11 @@ class EmployeeTile extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12)),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(
+                                '/employee/schedule',
+                                arguments: employee);
+                          },
                           child: const Text(
                             'VER AGENDA',
                             style: TextStyle(fontWeight: FontWeight.w500),

@@ -25,6 +25,7 @@ class HomeAdmPage extends ConsumerWidget {
           shape: const CircleBorder(),
           onPressed: () async {
             await Navigator.of(context).pushNamed('/employee/register');
+            ref.invalidate(getMeProvider);
             ref.invalidate(homeAdmVmProvider);
           },
           child: const CircleAvatar(

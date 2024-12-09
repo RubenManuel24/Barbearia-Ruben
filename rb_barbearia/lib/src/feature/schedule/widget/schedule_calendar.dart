@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ScheduleCalendar extends StatefulWidget {
-  ScheduleCalendar(
-      {super.key, 
-      required this.cancelPressed, 
-      required this.okPressed
-    });
+  const ScheduleCalendar({
+        super.key, 
+        required this.cancelPressed, 
+        required this.okPressed, 
+        required this.weekDays
+        });
+
   final VoidCallback cancelPressed;
- final ValueChanged<DateTime> okPressed;
+  final ValueChanged<DateTime> okPressed;
+  final List<dynamic> weekDays;
 
   @override
   State<ScheduleCalendar> createState() => _ScheduleCalendarState();
@@ -18,13 +21,37 @@ class ScheduleCalendar extends StatefulWidget {
 
 class _ScheduleCalendarState extends State<ScheduleCalendar> {
   DateTime? selectedDay;
+  late final List<int> weekDayEnable;
+   
+  int conertWeekDays(var day){
+
+    return switch(day.toLowerCase()){
+      "seg" => DateTime.monday,
+      "ter" => DateTime.tuesday,
+      "qua" => DateTime.wednesday,
+      "qui" => DateTime.thursday,
+      "sex" => DateTime.friday,
+      "sab" => DateTime.saturday,
+      "dom" => DateTime.sunday,
+       _ => 0
+    };
+
+  }
+
+   @override
+  void initState() {
+    weekDayEnable = widget.weekDays.map(conertWeekDays).toList();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Color(0xffe6e2e9), borderRadius: BorderRadius.circular(16)),
-      padding: EdgeInsets.all(10),
+          color: const Color(0xffe6e2e9),
+          borderRadius: BorderRadius.circular(16)),
+      padding: const EdgeInsets.all(10),
       child: Column(
         children: [
           TableCalendar(
@@ -35,10 +62,13 @@ class _ScheduleCalendarState extends State<ScheduleCalendar> {
             calendarFormat: CalendarFormat.month,
             formatAnimationCurve: Curves.easeInBack,
             headerStyle: const HeaderStyle(titleCentered: true),
+            enabledDayPredicate: (day) {
+              return weekDayEnable.contains(day.weekday);
+            },
             availableCalendarFormats: {CalendarFormat.month: 'Month'},
             locale: 'pt_BR',
             calendarStyle: CalendarStyle(
-                selectedDecoration: BoxDecoration(
+                selectedDecoration: const BoxDecoration(
                     color: ColorConstant.brow, shape: BoxShape.circle),
                 todayDecoration: BoxDecoration(
                     color: ColorConstant.brow.withOpacity(0.5),
@@ -66,14 +96,13 @@ class _ScheduleCalendarState extends State<ScheduleCalendar> {
                 ),
               ),
               TextButton(
-                onPressed: (){
-                  if(selectedDay == null){
+                onPressed: () {
+                  if (selectedDay == null) {
                     Message.showErro('Por favor selecione uma data', context);
                     return;
                   }
-                 widget.okPressed(selectedDay!);
+                  widget.okPressed(selectedDay!);
                 },
-                
                 child: const Text(
                   'OK',
                   style: TextStyle(

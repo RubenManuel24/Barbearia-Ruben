@@ -25,7 +25,7 @@ sealed class UserModel {
 }
 
 class UserModelADM extends UserModel {
-  final List? workDays;
+  final List<dynamic>? workDays;
   final List? workHours;
 
   UserModelADM(
@@ -57,8 +57,8 @@ class UserModelADM extends UserModel {
 }
 
 class UserModelEmployee extends UserModel {
-  final List<String> workDays;
-  final List<int> workHours;
+  final List<dynamic> workDays;
+  final List workHours;
   final int barberShopId;
 
   UserModelEmployee(
